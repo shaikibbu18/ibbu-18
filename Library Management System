@@ -1,0 +1,77 @@
+import sqlite3
+
+# Create a connection to an in-memory database
+conn = sqlite3.connect(':memory:')
+
+# Create a cursor object
+cur = conn.cursor()
+
+# SQL code to create tables and insert data
+sql_code = """
+CREATE TABLE Authors (
+    AuthorID INTEGER PRIMARY KEY,
+    Name TEXT NOT NULL
+);
+
+CREATE TABLE Books (
+    BookID INTEGER PRIMARY KEY,
+    Title TEXT NOT NULL,
+    AuthorID INTEGER,
+    Genre TEXT,
+    YearPublished INTEGER,
+    Available INTEGER DEFAULT 1,
+    FOREIGN KEY (AuthorID) REFERENCES Authors(AuthorID)
+);
+
+CREATE TABLE Members (
+    MemberID INTEGER PRIMARY KEY,
+    Name TEXT NOT NULL,
+    Email TEXT,
+    JoinDate TEXT
+);
+
+CREATE TABLE Loans (
+    LoanID INTEGER PRIMARY KEY,
+    BookID INTEGER,
+    MemberID INTEGER,
+    LoanDate TEXT,
+    ReturnDate TEXT,
+    FOREIGN KEY (BookID) REFERENCES Books(BookID),
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID)
+);
+
+-- Insert data
+INSERT INTO Authors VALUES (1, 'J.K. Rowling'), (2, 'George Orwell');
+INSERT INTO Books VALUES (1, 'Harry Potter', 1, 'Fantasy', 1997, 1), (2, '1984', 2, 'Dystopian', 1949, 1);
+INSERT INTO Members VALUES (1, 'Alice Smith', 'alice@example.com', '2023-01-01'), (2, 'Bob Johnson', 'bob@example.com', '2023-02-15');
+INSERT INTO Loans VALUES (1, 1, 1, '2024-04-01', NULL);
+
+-- View data
+SELECT * FROM Authors;
+SELECT * FROM Books;
+SELECT * FROM Members;
+SELECT * FROM Loans;
+"""
+
+# Execute the SQL code
+cur.executescript(sql_code)
+
+# Fetch and print the results for each table
+for table in ['Authors', 'Books', 'Members', 'Loans']:
+    cur.execute(f"SELECT * FROM {table}")
+    print(f"Table: {table}")
+    print(cur.fetchall())
+    print()
+
+# Close the connection
+conn.close()
+
+# Output results
+print("Authors Table:")
+print(authors)
+print("\nBooks Table:")
+print(books)
+print("\nMembers Table:")
+print(members)
+print("\nLoans Table:")
+print(loans)
